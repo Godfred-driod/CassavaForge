@@ -187,6 +187,13 @@ if (in_array($path, ['admin/products', 'admin/blog', 'admin/messages'], true)) {
     <?php render_end(); exit;
 }
 
+if (str_starts_with($path, 'blog/') && strlen($path) > 5) {
+    render_start('Journal article');
+    render_blog_article(substr($path, 5));
+    render_end();
+    exit;
+}
+
 if (in_array($path, ['', 'about', 'products', 'impact', 'blog', 'contact'], true)) {
     render_start($path === '' ? 'Home' : ucfirst($path));
     render_original_page($path === '' ? 'home' : $path);
