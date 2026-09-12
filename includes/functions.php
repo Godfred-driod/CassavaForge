@@ -20,6 +20,20 @@ function asset_url(?string $path): string
     return preg_match('#^(https?://|/)#', $path) ? $path : url($path);
 }
 
+function original_page_html(string $page): string
+{
+    $file = __DIR__ . '/../content/' . $page . '.html';
+    $html = is_file($file) ? (string) file_get_contents($file) : '';
+    $base = rtrim((string) app_config()['site_url'], '/');
+    $html = str_replace(['/images/', 'href="#"'], [$base . '/assets/images/', 'href="/"'], $html);
+    $html = preg_replace_callback('/<a([^>]*?)data-path="([^"]+)"([^>]*)>/i', static function (array $match): string {
+        $routes = ['home' => '/', 'about' => '/about', 'products' => '/products', 'impact' => '/impact', 'blog' => '/blog', 'contact' => '/contact'];
+        $href = $routes[$match[2]] ?? '/';
+        return '<a' . $match[1] . 'href="' . $href . '"' . $match[3] . '>';
+    }, $html) ?? $html;
+    return preg_replace('#<script\b[^>]*>.*?</script>#is', '', $html) ?? $html;
+}
+
 function save_upload(array $file, string $folder): ?string
 {
     if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || ($file['size'] ?? 0) > 5 * 1024 * 1024) {

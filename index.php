@@ -187,6 +187,13 @@ if (in_array($path, ['admin/products', 'admin/blog', 'admin/messages'], true)) {
     <?php render_end(); exit;
 }
 
+if (in_array($path, ['', 'about', 'products', 'impact', 'blog', 'contact'], true)) {
+    render_start($path === '' ? 'Home' : ucfirst($path));
+    render_original_page($path === '' ? 'home' : $path);
+    render_end();
+    exit;
+}
+
 if ($path === 'products' || str_starts_with($path, 'products/')) {
     $slug = str_starts_with($path, 'products/') ? substr($path, 9) : null;
     $products = safe_query(function () use ($slug): array {

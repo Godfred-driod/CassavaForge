@@ -1,4 +1,58 @@
 <?php
+function original_slot(string $html, string $id, string $replacement): string
+{
+  $pattern = '/<[^>]+id="' . preg_quote($id, '/') . '"[^>]*>.*?<\/[^>]+>/is';
+  return preg_replace($pattern, $replacement, $html, 1) ?? $html;
+}
+
+function original_product_cards(array $products): string
+{
+  $cards = '<div class="original-product-grid row g-4" id="productsGrid">';
+  foreach ($products as $product) {
+    $cards .= '<article class="product-card col-md-4" data-category="' . e((string) $product['category']) . '"><div class="original-card h-100 overflow-hidden"><div class="original-product-media"><img src="' . e(asset_url($product['image_url'] ?? null)) . '" alt="' . e($product['name']) . '"><span class="original-image-badge">' . e($product['application_grade'] ?? '') . '</span></div><div class="p-4 d-flex flex-column h-100"><div class="d-flex justify-content-between"><span class="original-label">' . e($product['series_code'] ? 'Series ' . $product['series_code'] : '') . '</span><span class="material-symbols-outlined text-success">' . e($product['icon'] ?: 'eco') . '</span></div><h3>' . e($product['name']) . '</h3><p class="text-secondary">' . e($product['description'] ?? '') . '</p><div class="mt-auto"><a class="original-action" href="' . e(url('products/' . $product['slug'])) . '">Learn More <span class="material-symbols-outlined">arrow_forward</span></a></div></div></div></article>';
+  }
+  return $cards . '</div>';
+}
+
+function original_blog_cards(array $posts): string
+{
+  $cards = '<div class="original-blog-grid row g-4">';
+  foreach ($posts as $post) {
+    $cards .= '<article class="col-md-6"><div class="original-card h-100 overflow-hidden"><div class="original-blog-media"><img src="' . e(asset_url($post['image_url'] ?? null)) . '" alt="' . e($post['title']) . '"><span class="original-image-badge">' . e($post['category'] ?? '') . '</span></div><div class="p-4"><div class="text-secondary small"><span class="material-symbols-outlined align-middle text-success">calendar_today</span> ' . e(date('M j, Y', strtotime((string) ($post['published_at'] ?? 'now')))) . ' &bull; ' . e((string) ($post['read_minutes'] ?? 3)) . ' min read</div><h3>' . e($post['title']) . '</h3><p class="text-secondary">' . e($post['excerpt'] ?? '') . '</p><a class="original-action" href="' . e(url('blog/' . $post['slug'])) . '">Read Article <span class="material-symbols-outlined">arrow_forward</span></a></div></div></article>';
+  }
+  return $cards . '</div>';
+}
+
+function original_contact_form(): string
+{
+  return '<form method="post" class="original-form"><input type="hidden" name="csrf" value="' . e(csrf_token()) . '"><label for="full_name">Name</label><input id="full_name" name="full_name" maxlength="200" required><label for="email_address">Email</label><input id="email_address" type="email" name="email_address" maxlength="254" required><label for="message_body">Message</label><textarea id="message_body" name="message_body" maxlength="5000" rows="6" required></textarea><button class="original-button" type="submit">Send inquiry <span class="material-symbols-outlined">arrow_forward</span></button></form>';
+}
+
+function render_original_page(string $page): void
+{
+  $html = original_page_html($page);
+  if ($page === 'home') {
+    echo $html;
+    render_collaboration_sections();
+    return;
+  }
+  if ($page === 'products') {
+    $products = safe_query(fn() => db()->query('SELECT * FROM products WHERE published = 1 ORDER BY display_order, name')->fetchAll(), []);
+    $html = original_slot($html, 'product-filter-slot', original_product_cards($products));
+    $html = original_slot($html, 'offset-calculator-slot', '');
+    $html = original_slot($html, 'tech-specs-slot', '');
+  }
+  if ($page === 'blog') {
+    $posts = safe_query(fn() => db()->query('SELECT * FROM blog_posts WHERE published = 1 ORDER BY published_at DESC')->fetchAll(), []);
+    $html = original_slot($html, 'blog-list-slot', original_blog_cards($posts));
+  }
+  if ($page === 'contact') {
+    $html = original_slot($html, 'contact-form-slot', original_contact_form());
+    $html = original_slot($html, 'faq-slot', '');
+  }
+  echo $html;
+}
+
 function render_collaboration_sections(): void
 {
     ?>

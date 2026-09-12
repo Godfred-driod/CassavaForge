@@ -1,0 +1,107 @@
+﻿<div class="flex flex-col w-full">
+<!-- Hero Section -->
+<section class="relative w-full bg-primary overflow-hidden -mt-20 pt-28 pb-16 lg:pb-20">
+<!-- Atmospheric Foliage Overlay -->
+<div class="absolute inset-0 w-full h-full bg-cover bg-center mix-blend-overlay opacity-30 pointer-events-none" data-alt="Cinematic overhead view of vibrant green tropical cassava foliage and dense botanical canopies, natural sunlight filtering through lush emerald leaves, deep earthy forest greens, rich organic textures with subtle soft bokeh" style="background-image: url('/images/blog-background-7.jpg')">
+</div>
+<!-- Radial Glow Depth -->
+<div class="absolute -top-24 right-1/4 w-96 h-96 rounded-full bg-secondary-container/10 blur-3xl pointer-events-none"></div>
+<div class="relative max-w-[1240px] mx-auto px-layout-margin-mobile lg:px-layout-margin-desktop">
+<div class="flex flex-col items-start gap-space-sm max-w-3xl">
+<!-- Pill Badge Eyebrow -->
+<div class="inline-flex items-center gap-space-2xs bg-secondary-container/20 px-3 py-1 rounded-full shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed"></span>
+<span class="font-label-caps text-label-caps text-secondary-fixed uppercase tracking-wider">Blog &amp; News</span>
+</div>
+<!-- Main Hero Title -->
+<h1 class="font-headline-xl text-headline-xl text-on-primary tracking-tight font-bold pt-1">
+          Ideas. Updates. Progress.
+        </h1>
+<!-- Sub-headline Description -->
+<p class="font-body-lg text-body-lg text-on-primary-container max-w-2xl leading-relaxed">
+          Stay informed about our journey, innovations, partnerships and the latest in sustainable materials.
+        </p>
+</div>
+<!-- Quick Filter Bar -->
+<div class="flex items-center gap-space-xs mt-8 overflow-x-auto pb-2 scrollbar-none">
+<button class="filter-btn active bg-surface text-primary font-label-md text-label-md px-4 py-1.5 rounded-full shadow-sm transition-all" data-category="all">
+          All Articles
+        </button>
+<button class="filter-btn bg-white/10 hover:bg-white/20 text-on-primary font-label-md text-label-md px-4 py-1.5 rounded-full backdrop-blur-sm transition-all" data-category="Innovation">
+          Innovation
+        </button>
+<button class="filter-btn bg-white/10 hover:bg-white/20 text-on-primary font-label-md text-label-md px-4 py-1.5 rounded-full backdrop-blur-sm transition-all" data-category="Research">
+          Research
+        </button>
+<button class="filter-btn bg-white/10 hover:bg-white/20 text-on-primary font-label-md text-label-md px-4 py-1.5 rounded-full backdrop-blur-sm transition-all" data-category="Sustainability">
+          Sustainability
+        </button>
+<button class="filter-btn bg-white/10 hover:bg-white/20 text-on-primary font-label-md text-label-md px-4 py-1.5 rounded-full backdrop-blur-sm transition-all" data-category="Community">
+          Community
+        </button>
+<button class="filter-btn bg-white/10 hover:bg-white/20 text-on-primary font-label-md text-label-md px-4 py-1.5 rounded-full backdrop-blur-sm transition-all" data-category="Product Update">
+          Product Update
+        </button>
+</div>
+</div>
+</section>
+<!-- News Cards Grid Section -->
+<section class="w-full bg-surface py-space-3xl lg:py-space-4xl">
+<div class="max-w-[1240px] mx-auto px-layout-margin-mobile lg:px-layout-margin-desktop">
+<!-- 2 Rows x 3 Columns Editorial Layout -->
+<div id="blog-list-slot"></div>
+<!-- Newsletter Dispatch / Tech Digest Block -->
+<div class="mt-space-3xl bg-surface-container-low rounded-xl p-space-xl lg:p-space-2xl shadow-sm relative overflow-hidden">
+<div class="absolute -right-12 -bottom-12 w-64 h-64 rounded-full bg-primary-fixed/20 blur-2xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-space-xl">
+<div class="flex flex-col gap-space-xs max-w-xl">
+<span class="font-label-caps text-label-caps text-primary uppercase tracking-wider">Stay In The Loop</span>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+              Biomaterial breakthroughs delivered straight to your inbox.
+            </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+              Monthly technical insights, peer-reviewed whitepapers, and updates on sustainable industrial packaging.
+            </p>
+</div>
+<form class="flex flex-col sm:flex-row gap-space-xs w-full lg:w-auto" id="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing to CassavaForge updates!');">
+<input class="px-space-md py-space-sm rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md outline-none focus:ring-2 focus:ring-primary shadow-sm min-w-[280px]" placeholder="Enter your corporate email" required="" type="email"/>
+<button class="bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md px-space-lg py-space-sm rounded-lg transition-colors shadow-sm flex items-center justify-center gap-space-xs" type="submit">
+<span>Subscribe</span>
+<span class="material-symbols-outlined text-[18px]">outgoing_mail</span>
+</button>
+</form>
+</div>
+</div>
+</div>
+</section>
+</div>
+<script>
+  // Simple category filtering micro-interaction
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('#articles-grid article');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Toggle Active Styling
+        filterBtns.forEach(b => {
+          b.classList.remove('bg-surface', 'text-primary');
+          b.classList.add('bg-white/10', 'text-on-primary');
+        });
+        btn.classList.add('bg-surface', 'text-primary');
+        btn.classList.remove('bg-white/10', 'text-on-primary');
+
+        const category = btn.getAttribute('data-category');
+
+        cards.forEach(card => {
+          const cardCategory = card.getAttribute('data-card-category');
+          if (category === 'all' || cardCategory === category) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  });
+</script>
