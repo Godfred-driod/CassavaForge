@@ -1,5 +1,7 @@
 /* Small PHP-host shell corrections layered over the compiled original stylesheet. */
 .border-primary { border-color: #00652c !important; }
+.page-contact .flex.items-center.gap-space-md.p-space-md.rounded-xl { min-height: 132px; padding: 1.5rem; }
+.page-contact .flex.items-center.gap-space-md.p-space-md.rounded-xl .material-symbols-outlined { font-size: 28px !important; }
 .mobile-bottom-nav { display: none; }
 .original-product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
 .original-blog-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }

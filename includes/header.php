@@ -16,7 +16,7 @@ $currentPath = preg_replace('#^php-app/?#', '', $currentPath);
   <link rel="stylesheet" href="<?= e(url('assets/css/original.css')) ?>">
   <link rel="stylesheet" href="<?= e(url('assets/css/touchups.css')) ?>">
 </head>
-<body>
+<body class="page-<?= e($currentPath ?: 'home') ?>">
 <header class="fixed top-0 left-0 right-0 z-50 bg-surface/85 backdrop-blur-xl shadow-sm">
   <div class="h-20 max-w-[1240px] mx-auto px-layout-margin-mobile lg:px-layout-margin-desktop flex items-center justify-between gap-space-lg">
     <a href="<?= e(url('')) ?>" class="flex items-center gap-space-sm"><img alt="CassavaForge Logo" class="h-8 w-auto object-contain" src="<?= e(url('assets/images/cassavaforge-logo.png')) ?>"><span class="font-headline-sm text-headline-sm tracking-tight text-on-surface">CassavaForge</span></a>
