@@ -1,5 +1,6 @@
 /* Small PHP-host shell corrections layered over the compiled original stylesheet. */
 .border-primary { border-color: #00652c !important; }
+.mobile-bottom-nav { display: none; }
 .original-product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
 .original-blog-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
 .original-product-grid .product-card { min-height: 34rem; }
@@ -10,3 +11,4 @@
 #focus-section ~ section button:hover::after, #focus-section + section button:hover::after { transform: translateX(110%); }
 @media (max-width: 991.98px) { .original-product-grid, .original-blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 767.98px) { .original-product-grid, .original-blog-grid { grid-template-columns: 1fr; } }
+@media (max-width: 767.98px) { .mobile-bottom-nav { display: block; } body { padding-bottom: 4rem; } }
