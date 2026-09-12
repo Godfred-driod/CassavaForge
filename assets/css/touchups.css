@@ -1,4 +1,5 @@
 /* Small PHP-host shell corrections layered over the compiled original stylesheet. */
+.border-primary { border-color: #00652c !important; }
 .original-product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
 .original-blog-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
 .original-product-grid .product-card { min-height: 34rem; }
