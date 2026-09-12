@@ -13,6 +13,7 @@ $currentPath = preg_replace('#^php-app/?#', '', $currentPath);
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0,0" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="<?= e(url('assets/css/style.css')) ?>">
+  <link rel="stylesheet" href="<?= e(url('assets/css/original.css')) ?>">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">

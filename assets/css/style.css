@@ -130,4 +130,5 @@ main > .flex.flex-col.w-full { width: 100%; }
 .original-form label { color: var(--muted); font-size: 14px; font-weight: 600; }
 .original-form input, .original-form textarea { border: 1px solid var(--line); border-radius: .5rem; padding: .7rem .85rem; font: inherit; background: var(--surface); }
 .original-button { align-self: flex-start; border: 0; border-radius: 999px; padding: .75rem 1.25rem; color: #fff; background: var(--primary); font: 600 14px 'Manrope', sans-serif; }
+.navbar-brand img, footer img { width: auto !important; height: 32px !important; max-width: 180px; object-fit: contain; }
 @media (max-width: 767.98px) { .original-product-grid, .original-blog-grid { grid-template-columns: 1fr; } .font-headline-xl { font-size: 28px; } }
