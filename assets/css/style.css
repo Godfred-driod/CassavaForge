@@ -1,33 +1,34 @@
-:root {
-  --forest: #123d2a;
-  --leaf: #2f7d4f;
-  --lime: #d8ed9b;
-  --cream: #f5f1e8;
-  --ink: #1d2a23;
-  --muted: #68766d;
-  --line: #dce4db;
-}
-body { color: var(--ink); background: var(--cream); font-family: Georgia, 'Times New Roman', serif; }
-.sans, .btn, nav, small, .form-control, .badge { font-family: 'Trebuchet MS', Arial, sans-serif; }
-.navbar { background: rgba(255,253,248,.88); backdrop-filter: blur(18px); }
-.navbar-brand { letter-spacing: .08em; }
-.nav-link { color: var(--muted) !important; }
-.nav-link:hover, .nav-link.active { color: var(--leaf) !important; }
-.hero { background: linear-gradient(120deg, var(--forest), #245c3e 64%, #6d8e46); color: white; }
-.hero h1 { font-size: clamp(3rem, 7vw, 6.5rem); line-height: .95; letter-spacing: -.04em; }
-.eyebrow { color: var(--leaf); text-transform: uppercase; letter-spacing: .16em; font: 700 .75rem/1 'Trebuchet MS', sans-serif; }
-.hero .eyebrow { color: var(--lime); }
-.btn-primary { background: var(--leaf); border-color: var(--leaf); }
-.btn-primary:hover { background: var(--forest); border-color: var(--forest); }
-.btn-outline-light:hover { color: var(--forest); }
-.section { padding: 5rem 0; }
-.card { border: 1px solid var(--line); border-radius: 0; background: #fffdf8; }
-.product-image { width: 100%; height: 250px; object-fit: cover; background: #dfead7; }
-.stat { border-left: 3px solid var(--leaf); padding-left: 1rem; }
-footer { background: var(--forest); color: white; }
-footer a { color: var(--lime); text-decoration: none; }
+:root { --primary: #00652c; --primary-container: #15803d; --secondary: #006e2f; --secondary-fixed: #6bff8f; --tertiary: #25623a; --surface: #fbf8fc; --surface-low: #f6f2f7; --surface-high: #eae7eb; --surface-highest: #e4e1e6; --ink: #1b1b1e; --muted: #3f493f; --outline: #6f7a6e; --line: #becabc; }
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap');
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { color: var(--ink); background: var(--surface); font-family: 'Manrope', sans-serif; font-size: 15px; line-height: 1.6; }
+.sans, .btn, nav, small, .form-control, .badge { font-family: 'Manrope', sans-serif; }
+.navbar { background: rgba(251,248,252,.86) !important; backdrop-filter: blur(18px); }
+.navbar-brand { letter-spacing: -.02em; }
+.nav-link { color: var(--muted) !important; font-weight: 600; }
+.nav-link:hover, .nav-link.active { color: var(--primary) !important; }
+.hero { background-color: var(--primary); color: white; }
+.image-hero { position: relative; isolation: isolate; background-position: center; background-size: cover; }
+.image-hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: rgba(0,33,10,.54); }
+.image-panel { min-height: 280px; background-position: center; background-size: cover; }
+.hero h1, h1 { font-size: clamp(2.25rem, 5vw, 3.5rem); line-height: 1.14; letter-spacing: -.02em; font-weight: 700; }
+h2 { font-weight: 700; letter-spacing: -.02em; }
+.eyebrow { color: var(--primary); text-transform: uppercase; letter-spacing: .06em; font: 700 11px/1.45 'Manrope', sans-serif; }
+.hero .eyebrow { color: var(--secondary-fixed); }
+.btn-primary, .btn-success { background: var(--primary); border-color: var(--primary); }
+.btn-primary:hover, .btn-success:hover { background: var(--primary-container); border-color: var(--primary-container); }
+.btn-outline-success { color: var(--primary); border-color: var(--primary); }
+.btn-outline-light:hover { color: var(--primary); }
+.section { padding: 4.5rem 0; }
+.bg-light { background-color: var(--surface-low) !important; }
+.card { border: 0; border-radius: .75rem; background: #fff; box-shadow: 0 2px 8px rgba(27,27,30,.05); }
+.product-image { width: 100%; height: 250px; object-fit: cover; background: var(--surface-high); }
+.stat { border-left: 3px solid var(--primary); padding-left: 1rem; }
+footer { background: var(--primary); color: white; }
+footer a { color: var(--secondary-fixed); text-decoration: none; }
 .mobile-bottom-nav { z-index: 1030; }
 @media (max-width: 767.98px) { body { padding-bottom: 64px; } }
 .admin-shell { min-height: 100vh; background: #f4f7f2; }
-.admin-sidebar { background: var(--forest); min-height: 100vh; }
+.admin-sidebar { background: var(--primary); min-height: 100vh; }
 .table { --bs-table-bg: transparent; }
