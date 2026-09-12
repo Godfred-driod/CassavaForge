@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Product } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
+import { getProductImage } from "@/lib/image-fallbacks";
 
 const MATERIAL_GUIDANCE: Record<
   Product["category"],
@@ -91,7 +92,7 @@ export default async function ProductDetailPage({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               className="aspect-[4/3] h-full w-full object-cover transition-transform duration-700 hover:scale-105"
-              src={product.image_url ?? "/images/cassavaforge-logo.png"}
+              src={getProductImage(product)}
               alt={product.name}
             />
           </div>

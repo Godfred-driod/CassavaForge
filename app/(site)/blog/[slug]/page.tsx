@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { BlogPost } from "@/lib/types";
 import { supabase } from "@/lib/supabase";
+import { getBlogImage } from "@/lib/image-fallbacks";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", {
@@ -57,12 +58,10 @@ export default async function BlogArticlePage({
 
       <div className="mx-auto grid max-w-[1100px] grid-cols-1 gap-space-2xl px-layout-margin-mobile py-space-3xl lg:grid-cols-12 lg:gap-layout-gutter lg:px-layout-margin-desktop lg:py-space-4xl">
         <div className="lg:col-span-8">
-          {post.image_url && (
-            <div className="motion-reveal mb-space-2xl overflow-hidden rounded-2xl bg-surface-container">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="aspect-[16/10] h-full w-full object-cover" src={post.image_url} alt={post.title} />
-            </div>
-          )}
+          <div className="motion-reveal mb-space-2xl overflow-hidden rounded-2xl bg-surface-container">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="aspect-[16/10] h-full w-full object-cover" src={getBlogImage(post)} alt={post.title} />
+          </div>
           <div className="flex flex-col gap-space-lg">
             {paragraphs.map((paragraph, index) => (
               <p key={`${post.id}-${index}`} className="whitespace-pre-line font-body-lg text-body-lg text-on-surface-variant">

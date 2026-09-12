@@ -1,5 +1,6 @@
 import type { Product } from "@/lib/types";
 import Link from "next/link";
+import { getProductImage } from "@/lib/image-fallbacks";
 
 export default function ProductCard({ product }: { product: Product }) {
   return (
@@ -12,7 +13,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <img
           className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
           alt={product.name}
-          src={product.image_url ?? "/images/cassavaforge-logo.png"}
+          src={getProductImage(product)}
         />
         {product.application_grade && (
           <div className="absolute top-3 left-3 bg-surface/90 backdrop-blur-sm px-2.5 py-1 rounded-full">

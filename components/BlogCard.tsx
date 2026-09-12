@@ -1,5 +1,6 @@
 import type { BlogPost } from "@/lib/types";
 import Link from "next/link";
+import { getBlogImage } from "@/lib/image-fallbacks";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", {
@@ -17,7 +18,7 @@ export default function BlogCard({ post }: { post: BlogPost }) {
         <img
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           alt={post.title}
-          src={post.image_url ?? "/images/cassavaforge-logo.png"}
+          src={getBlogImage(post)}
         />
         {post.category && (
           <div className="absolute top-3 left-3">
