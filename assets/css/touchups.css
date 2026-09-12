@@ -1,0 +1,11 @@
+/* Small PHP-host shell corrections layered over the compiled original stylesheet. */
+.original-product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+.original-blog-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+.original-product-grid .product-card { min-height: 34rem; }
+.original-product-grid .product-card > div { height: 100%; }
+#focus-section ~ section button, #focus-section + section button { position: relative; overflow: hidden; transition: background-color .25s ease, transform .25s ease, box-shadow .25s ease; }
+#focus-section ~ section button:hover, #focus-section + section button:hover { background-color: #95f8a7 !important; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,101,44,.25); }
+#focus-section ~ section button::after, #focus-section + section button::after { content: ''; position: absolute; inset: 0; transform: translateX(-110%); background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); transition: transform .5s ease; }
+#focus-section ~ section button:hover::after, #focus-section + section button:hover::after { transform: translateX(110%); }
+@media (max-width: 991.98px) { .original-product-grid, .original-blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 767.98px) { .original-product-grid, .original-blog-grid { grid-template-columns: 1fr; } }

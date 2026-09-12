@@ -6,6 +6,11 @@ function e(?string $value): string
     return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
 }
 
+function svg_path(string $value): string
+{
+    return e(str_replace(['0 0 0-6', '0 0-6'], ['0 0 0 -6', '0 0 -6'], $value));
+}
+
 function url(string $path = ''): string
 {
     $base = rtrim((string) app_config()['site_url'], '/');
