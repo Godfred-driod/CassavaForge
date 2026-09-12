@@ -1,7 +1,7 @@
-node_modules
-.next
+config/config.local.php
+assets/uploads/
 .env
 .env.local
 *.log
-*.tsbuildinfo
+*.sql.bak
 CassavaForge-unpushed-files.zip
