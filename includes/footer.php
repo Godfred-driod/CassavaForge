@@ -1,10 +1,8 @@
 </main>
 <footer class="py-5 mt-5">
-  <div class="container d-flex flex-column flex-md-row justify-content-between gap-3 sans">
-    <div><strong>CASSAVAFORGE</strong><br><small class="text-white-50">Materials grown with purpose.</small></div>
-    <div class="text-md-end"><a href="<?= e(url('contact')) ?>">Start a conversation</a><br><small class="text-white-50">Plant-based materials for a better next.</small></div>
-  </div>
+  <div class="container"><div class="row g-5 pb-5"><div class="col-md-5"><div class="d-flex align-items-center gap-2"><img src="<?= e(url('assets/images/cassavaforge-logo.png')) ?>" alt="CassavaForge Logo" height="32" class="brightness-0 invert"><strong class="h4 mb-0">CassavaForge</strong></div><p class="mt-3">Sustainable Materials. A Brighter Future.</p></div><div class="col-md-4"><span class="eyebrow">Quick Links</span><nav class="d-flex flex-column gap-2 mt-2 sans"><?php foreach (['','about','products','impact','blog'] as $link): ?><a href="<?= e(url($link)) ?>"><?= e($link === '' ? 'Home' : ucfirst($link)) ?></a><?php endforeach; ?></nav></div><div class="col-md-3"><span class="eyebrow">Connect With Us</span><div class="d-flex gap-2 mt-2"><a class="btn btn-outline-light rounded-circle" href="https://www.linkedin.com/company/139313981" aria-label="LinkedIn">in</a><a class="btn btn-outline-light rounded-circle" href="#" aria-label="X">X</a><a class="btn btn-outline-light rounded-circle" href="#" aria-label="Instagram">ig</a><a class="btn btn-outline-light rounded-circle" href="#" aria-label="YouTube">yt</a></div></div></div><div class="border-top border-light pt-4 d-flex flex-column flex-sm-row justify-content-between gap-2"><p>&copy; 2025 CassavaForge. All rights reserved.</p><p class="eyebrow">BIO-PLASTICS REDEFINED</p></div></div>
 </footer>
+<nav class="mobile-bottom-nav d-md-none fixed-bottom bg-white shadow-lg"><div class="d-flex justify-content-around py-2 sans"><?php foreach (['' => 'Home', 'about' => 'About', 'products' => 'Products', 'impact' => 'Impact', 'blog' => 'Blog', 'contact' => 'Contact'] as $link => $label): ?><a class="small text-center <?= $currentPath === $link ? 'text-success fw-bold' : 'text-secondary' ?>" href="<?= e(url($link)) ?>"><span class="d-block">&#9679;</span><?= e($label) ?></a><?php endforeach; ?></div></nav>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
