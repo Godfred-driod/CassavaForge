@@ -12,6 +12,8 @@ session_start();
 require __DIR__ . '/includes/db.php';
 require __DIR__ . '/includes/functions.php';
 require __DIR__ . '/includes/site-sections.php';
+require __DIR__ . '/includes/analytics.php';
+require __DIR__ . '/includes/admin-landers.php';
 
 $path = trim($requestPath, '/');
 $path = preg_replace('#^php-app/?#', '', $path);
@@ -43,20 +45,26 @@ function safe_query(callable $query, mixed $fallback = []): mixed
     }
 }
 
-function public_visitor(): void
+function current_visitor_id(): ?string
 {
-    if (is_admin() || !empty($_COOKIE['cf_visitor'])) {
-        return;
+    if (is_admin()) {
+        return null;
+    }
+    $existing = trim((string) ($_COOKIE['cf_visitor'] ?? ''));
+    if ($existing !== '') {
+        return $existing;
     }
     $visitor = uuid();
+    $_COOKIE['cf_visitor'] = $visitor;
     setcookie('cf_visitor', $visitor, ['expires' => time() + 31536000, 'path' => '/', 'secure' => !empty($_SERVER['HTTPS']), 'httponly' => true, 'samesite' => 'Lax']);
     safe_query(function () use ($visitor): void {
         $stmt = db()->prepare('INSERT IGNORE INTO site_visitors (visitor_id) VALUES (?)');
         $stmt->execute([$visitor]);
     });
+    return $visitor;
 }
 
-public_visitor();
+track_current_request($path);
 
 if ($path === 'admin/logout') {
     $_SESSION = [];
@@ -97,14 +105,23 @@ if ($path === 'admin') {
     $posts = safe_query(fn() => (int) db()->query('SELECT COUNT(*) FROM blog_posts')->fetchColumn(), 0);
     $messages = safe_query(fn() => (int) db()->query('SELECT COUNT(*) FROM contact_messages WHERE is_read = 0')->fetchColumn(), 0);
     $visitors = safe_query(fn() => (int) db()->query('SELECT COUNT(*) FROM site_visitors')->fetchColumn(), 0);
+    $pageViews = safe_query(fn() => (int) db()->query('SELECT COUNT(*) FROM page_views')->fetchColumn(), 0);
     render_start('Admin dashboard'); ?>
     <section class="section"><div class="container">
       <div class="d-flex justify-content-between align-items-center mb-5"><div><p class="eyebrow">Workspace</p><h1>Dashboard</h1></div><a class="btn btn-outline-dark sans" href="<?= e(url('admin/logout')) ?>">Sign out</a></div>
       <div class="row g-4">
-        <?php foreach ([['Products', $products, 'admin/products'], ['Journal posts', $posts, 'admin/blog'], ['Unread messages', $messages, 'admin/messages'], ['Unique visits', $visitors, 'admin']] as $stat): ?><div class="col-md-3"><a class="card p-4 text-decoration-none text-dark d-block h-100" href="<?= e(url($stat[2])) ?>"><p class="eyebrow"><?= e($stat[0]) ?></p><strong class="display-5"><?= e((string) $stat[1]) ?></strong></a></div><?php endforeach; ?>
+        <?php foreach ([['Products', $products, 'admin/products'], ['Journal posts', $posts, 'admin/blog'], ['Unread messages', $messages, 'admin/messages'], ['Landing page views', $pageViews, 'admin/landers'], ['Unique visits', $visitors, 'admin']] as $stat): ?><div class="col-6 col-lg"><a class="card p-4 text-decoration-none text-dark d-block h-100" href="<?= e(url($stat[2])) ?>"><p class="eyebrow"><?= e($stat[0]) ?></p><strong class="display-5"><?= e((string) $stat[1]) ?></strong></a></div><?php endforeach; ?>
       </div>
     </div></section>
     <?php render_end(); exit;
+}
+
+if ($path === 'admin/landers') {
+    require_admin();
+    render_start('Landing pages');
+    render_landers_report();
+    render_end();
+    exit;
 }
 
 if ($path === 'contact' && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -183,7 +200,61 @@ if (in_array($path, ['admin/products', 'admin/blog', 'admin/messages'], true)) {
     }
     $items = safe_query(fn() => db()->query("SELECT * FROM {$table} ORDER BY updated_at DESC")->fetchAll(), []);
     render_start($isProducts ? 'Manage products' : 'Manage journal'); ?>
-    <section class="section"><div class="container"><div class="d-flex justify-content-between mb-4"><h1><?= $isProducts ? 'Products' : 'Journal' ?></h1><a class="btn btn-outline-dark sans" href="<?= e(url('admin')) ?>">Dashboard</a></div><div class="row g-4"><div class="col-lg-7"><div class="table-responsive"><table class="table sans"><thead><tr><th>Name</th><th>Status</th><th></th></tr></thead><tbody><?php foreach ($items as $item): ?><tr><td><?= e($item[$isProducts ? 'name' : 'title']) ?></td><td><?= !empty($item['published']) ? 'Published' : 'Draft' ?></td><td><a class="btn btn-sm btn-outline-dark" href="<?= e(url($path . '?edit=' . $item['id'])) ?>">Edit</a> <a class="btn btn-sm btn-outline-danger" href="<?= e(url($path . '?delete=' . $item['id'])) ?>" onclick="return confirm('Delete this item?')">Delete</a></td></tr><?php endforeach; ?></tbody></table></div></div><div class="col-lg-5"><form method="post" enctype="multipart/form-data" class="card p-4"><input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>"><input type="hidden" name="id" value="<?= e($editing['id'] ?? '') ?>"><h2 class="h4"><?= $editing ? 'Edit' : 'Add' ?> <?= $isProducts ? 'product' : 'post' ?></h2><label class="form-label sans">Name / title</label><input class="form-control mb-3" name="<?= $isProducts ? 'name' : 'title' ?>" value="<?= e($editing[$isProducts ? 'name' : 'title'] ?? '') ?>" required><label class="form-label sans">Slug</label><input class="form-control mb-3" name="slug" value="<?= e($editing['slug'] ?? '') ?>" required><label class="form-label sans">Category</label><input class="form-control mb-3" name="category" value="<?= e($editing['category'] ?? ($isProducts ? 'packaging' : 'Field note')) ?>"><?php if ($isProducts): ?><label class="form-label sans">Series code</label><input class="form-control mb-3" name="series_code" value="<?= e($editing['series_code'] ?? '') ?>"><label class="form-label sans">Application grade</label><input class="form-control mb-3" name="application_grade" value="<?= e($editing['application_grade'] ?? '') ?>"><label class="form-label sans">Display order</label><input class="form-control mb-3" type="number" name="display_order" value="<?= e((string) ($editing['display_order'] ?? 0)) ?>"><?php endif; ?><label class="form-label sans"><?= $isProducts ? 'Description' : 'Excerpt' ?></label><textarea class="form-control mb-3" name="<?= $isProducts ? 'description' : 'excerpt' ?>" rows="4"><?= e($editing[$isProducts ? 'description' : 'excerpt'] ?? '') ?></textarea><?php if (!$isProducts): ?><label class="form-label sans">Content</label><textarea class="form-control mb-3" name="content" rows="7"><?= e($editing['content'] ?? '') ?></textarea><label class="form-label sans">Author</label><input class="form-control mb-3" name="author" value="<?= e($editing['author'] ?? 'CassavaForge') ?>"><label class="form-label sans">Read minutes</label><input class="form-control mb-3" type="number" name="read_minutes" value="<?= e((string) ($editing['read_minutes'] ?? 3)) ?>"><?php endif; ?><label class="form-label sans">Image URL or upload</label><input class="form-control mb-2" name="image_url" value="<?= e($editing['image_url'] ?? '') ?>"><input class="form-control mb-3" type="file" name="image" accept="image/jpeg,image/png,image/webp,image/gif"><div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="published" <?= !isset($editing['published']) || $editing['published'] ? 'checked' : '' ?>><label class="form-check-label sans">Published</label></div><button class="btn btn-primary sans">Save</button><?php if ($editing): ?> <a class="btn btn-link sans" href="<?= e(url($path)) ?>">Cancel</a><?php endif; ?></form></div></div></div></section>
+    <section class="section"><div class="container">
+      <div class="d-flex justify-content-between mb-4"><h1><?= $isProducts ? 'Products' : 'Journal' ?></h1><a class="btn btn-outline-dark sans" href="<?= e(url('admin')) ?>">Dashboard</a></div>
+      <div class="row g-4">
+        <div class="col-lg-7">
+          <div class="table-responsive"><table class="table sans"><thead><tr><th>Name</th><th>Status</th><th></th></tr></thead><tbody><?php foreach ($items as $item): ?><tr><td><?= e($item[$isProducts ? 'name' : 'title']) ?></td><td><?= !empty($item['published']) ? 'Published' : 'Draft' ?></td><td><a class="btn btn-sm btn-outline-dark" href="<?= e(url($path . '?edit=' . $item['id'])) ?>">Edit</a> <a class="btn btn-sm btn-outline-danger" href="<?= e(url($path . '?delete=' . $item['id'])) ?>" onclick="return confirm('Delete this item?')">Delete</a></td></tr><?php endforeach; ?></tbody></table></div>
+        </div>
+        <div class="col-lg-5">
+          <form method="post" enctype="multipart/form-data" class="card p-4">
+            <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
+            <input type="hidden" name="id" value="<?= e($editing['id'] ?? '') ?>">
+            <h2 class="h4"><?= $editing ? 'Edit' : 'Add' ?> <?= $isProducts ? 'product' : 'post' ?></h2>
+            <label class="form-label sans">Name / title</label><input class="form-control mb-3" name="<?= $isProducts ? 'name' : 'title' ?>" value="<?= e($editing[$isProducts ? 'name' : 'title'] ?? '') ?>" required>
+            <label class="form-label sans">Slug</label><input class="form-control mb-3" name="slug" value="<?= e($editing['slug'] ?? '') ?>" required>
+            <label class="form-label sans">Category</label><input class="form-control mb-3" name="category" value="<?= e($editing['category'] ?? ($isProducts ? 'packaging' : 'Field note')) ?>">
+            <?php if ($isProducts): ?>
+              <label class="form-label sans">Series code</label><input class="form-control mb-3" name="series_code" value="<?= e($editing['series_code'] ?? '') ?>">
+              <label class="form-label sans">Application grade</label><input class="form-control mb-3" name="application_grade" value="<?= e($editing['application_grade'] ?? '') ?>">
+              <label class="form-label sans">Icon <span class="text-muted small">(Material Symbols name, e.g. eco)</span></label><input class="form-control mb-3" name="icon" value="<?= e($editing['icon'] ?? '') ?>">
+              <div class="row g-2 mb-3">
+                <div class="col-6"><label class="form-label sans">Spec 1 label</label><input class="form-control" name="spec1_label" value="<?= e($editing['spec1_label'] ?? '') ?>"></div>
+                <div class="col-6"><label class="form-label sans">Spec 1 value</label><input class="form-control" name="spec1_value" value="<?= e($editing['spec1_value'] ?? '') ?>"></div>
+                <div class="col-6"><label class="form-label sans">Spec 2 label</label><input class="form-control" name="spec2_label" value="<?= e($editing['spec2_label'] ?? '') ?>"></div>
+                <div class="col-6"><label class="form-label sans">Spec 2 value</label><input class="form-control" name="spec2_value" value="<?= e($editing['spec2_value'] ?? '') ?>"></div>
+              </div>
+              <label class="form-label sans">Display order</label><input class="form-control mb-3" type="number" name="display_order" value="<?= e((string) ($editing['display_order'] ?? 0)) ?>">
+            <?php endif; ?>
+            <label class="form-label sans"><?= $isProducts ? 'Description' : 'Excerpt' ?></label><textarea class="form-control mb-3" name="<?= $isProducts ? 'description' : 'excerpt' ?>" rows="4"><?= e($editing[$isProducts ? 'description' : 'excerpt'] ?? '') ?></textarea>
+            <?php if (!$isProducts): ?>
+              <label class="form-label sans">Content</label><textarea class="form-control mb-3" name="content" rows="7"><?= e($editing['content'] ?? '') ?></textarea>
+              <label class="form-label sans">Author</label><input class="form-control mb-3" name="author" value="<?= e($editing['author'] ?? 'CassavaForge') ?>">
+              <label class="form-label sans">Read minutes</label><input class="form-control mb-3" type="number" name="read_minutes" value="<?= e((string) ($editing['read_minutes'] ?? 3)) ?>">
+            <?php endif; ?>
+            <label class="form-label sans">Image URL or upload</label>
+            <input class="form-control mb-2" name="image_url" value="<?= e($editing['image_url'] ?? '') ?>">
+            <input class="form-control mb-2" type="file" name="image" accept="image/jpeg,image/png,image/webp,image/gif" data-image-input>
+            <img class="img-fluid rounded mb-3" style="max-height:160px" alt="" data-image-preview src="<?= e(asset_url($editing['image_url'] ?? null)) ?>"<?= empty($editing['image_url']) ? ' hidden' : '' ?>>
+            <div class="form-check mb-3"><input class="form-check-input" type="checkbox" name="published" <?= !isset($editing['published']) || $editing['published'] ? 'checked' : '' ?>><label class="form-check-label sans">Published</label></div>
+            <button class="btn btn-primary sans">Save</button><?php if ($editing): ?> <a class="btn btn-link sans" href="<?= e(url($path)) ?>">Cancel</a><?php endif; ?>
+          </form>
+        </div>
+      </div>
+      <script>
+      (function () {
+        var input = document.querySelector('[data-image-input]');
+        var preview = document.querySelector('[data-image-preview]');
+        if (!input || !preview) { return; }
+        input.addEventListener('change', function () {
+          var file = input.files && input.files[0];
+          if (!file) { return; }
+          preview.src = URL.createObjectURL(file);
+          preview.hidden = false;
+        });
+      })();
+      </script>
+    </div></section>
     <?php render_end(); exit;
 }
 
@@ -217,7 +288,24 @@ if ($path === 'products' || str_starts_with($path, 'products/')) {
     render_start($slug ? 'Product detail' : 'Products'); ?>
         <section class="image-hero hero py-5" style="background-image:url('<?= e(url('assets/images/products-minimal-studio-still-life-photography-of-1.jpg')) ?>')"><div class="container py-5"><p class="eyebrow">Material systems</p><h1 class="display-3 mb-5">High-Performance Bioplastics for a<br>Better Future.</h1></div></section><section class="section"><div class="container">
             <?php if (!$slug): ?><div class="d-flex flex-wrap gap-2 mb-4 sans"><a class="btn btn-sm <?= empty($_GET['category']) ? 'btn-success' : 'btn-outline-success' ?>" href="<?= e(url('products')) ?>">All</a><?php foreach (['packaging','films','cutlery'] as $category): ?><a class="btn btn-sm <?= ($_GET['category'] ?? '') === $category ? 'btn-success' : 'btn-outline-success' ?>" href="<?= e(url('products?category=' . $category)) ?>"><?= e(ucfirst($category)) ?></a><?php endforeach; ?></div><?php endif; ?>
-      <?php if ($slug && !empty($products[0])): $product = $products[0]; ?><div class="row g-5 align-items-center"><div class="col-md-6"><div class="ratio ratio-4x3 bg-success-subtle"><img class="product-image" src="<?= e(asset_url($product['image_url'] ?? null)) ?>" alt="<?= e($product['name']) ?>"></div></div><div class="col-md-6"><span class="badge text-bg-success sans mb-3"><?= e($product['category']) ?></span><h2><?= e($product['name']) ?></h2><p class="lead"><?= e($product['description']) ?></p><a class="btn btn-outline-dark sans" href="<?= e(url('products')) ?>">Back to products</a></div></div>
+      <?php if ($slug && !empty($products[0])): $product = $products[0]; ?>
+        <div class="row g-5 align-items-center">
+          <div class="col-md-6"><div class="ratio ratio-4x3 bg-success-subtle"><img class="product-image" src="<?= e(asset_url($product['image_url'] ?? null)) ?>" alt="<?= e($product['name']) ?>"></div></div>
+          <div class="col-md-6">
+            <span class="badge text-bg-success sans mb-3"><?= e($product['category']) ?></span>
+            <?php if (!empty($product['series_code'])): ?><p class="eyebrow mb-2">Series <?= e($product['series_code']) ?></p><?php endif; ?>
+            <h2><?= e($product['name']) ?></h2>
+            <?php if (!empty($product['application_grade'])): ?><p class="text-muted sans mb-2"><?= e($product['application_grade']) ?></p><?php endif; ?>
+            <p class="lead"><?= e($product['description']) ?></p>
+            <?php if (!empty($product['spec1_label']) || !empty($product['spec2_label'])): ?>
+              <dl class="row sans mt-4 mb-4">
+                <?php if (!empty($product['spec1_label'])): ?><dt class="col-6"><?= e($product['spec1_label']) ?></dt><dd class="col-6"><?= e($product['spec1_value']) ?></dd><?php endif; ?>
+                <?php if (!empty($product['spec2_label'])): ?><dt class="col-6"><?= e($product['spec2_label']) ?></dt><dd class="col-6"><?= e($product['spec2_value']) ?></dd><?php endif; ?>
+              </dl>
+            <?php endif; ?>
+            <a class="btn btn-outline-dark sans" href="<?= e(url('products')) ?>">Back to products</a>
+          </div>
+        </div>
       <?php else: ?><div class="row g-4"><?php foreach ($products as $product): ?><div class="col-md-4"><article class="card h-100 overflow-hidden"><img class="product-image" src="<?= e(asset_url($product['image_url'] ?? null)) ?>" alt="<?= e($product['name']) ?>"><div class="p-4"><p class="eyebrow"><?= e($product['category']) ?></p><h2 class="h4"><?= e($product['name']) ?></h2><p><?= e($product['description']) ?></p><?php if (!empty($product['slug'])): ?><a class="btn btn-sm btn-outline-dark sans" href="<?= e(url('products/' . $product['slug'])) ?>">View material</a><?php endif; ?></div></article></div><?php endforeach; ?></div><?php if (!$products): ?><p class="sans">Products will appear here after the MySQL seed data is imported.</p><?php endif; ?><?php endif; ?></div></section>
     <?php if (!$slug) { render_offset_calculator(); render_faq(); render_specs_modal(); } render_end(); exit;
 }

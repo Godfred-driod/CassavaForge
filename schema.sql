@@ -50,3 +50,14 @@ CREATE TABLE site_visitors (
   visitor_id CHAR(36) PRIMARY KEY,
   first_seen TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE page_views (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  visitor_id CHAR(36) NULL,
+  path VARCHAR(255) NOT NULL,
+  referrer VARCHAR(2048) NULL,
+  user_agent VARCHAR(512) NULL,
+  viewed_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_page_views_path (path),
+  INDEX idx_page_views_viewed_at (viewed_at),
+  INDEX idx_page_views_visitor (visitor_id)
+);
