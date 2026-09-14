@@ -7,11 +7,29 @@ function original_slot(string $html, string $id, string $replacement): string
 
 function original_product_cards(array $products): string
 {
+  if (!$products) {
+    return '<p class="font-body-md text-body-md text-on-surface-variant col-span-full">Products will appear here once they are added from the admin dashboard.</p>';
+  }
   $cards = '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-layout-gutter" id="productsGrid">';
   foreach ($products as $product) {
     $cards .= '<article class="product-card motion-reveal group flex min-h-[34rem] w-full flex-col bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300" data-category="' . e((string) $product['category']) . '"><div class="relative aspect-square w-full overflow-hidden bg-surface-container"><img class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" src="' . e(asset_url($product['image_url'] ?? null)) . '" alt="' . e($product['name']) . '"><div class="absolute top-3 left-3 bg-surface/90 backdrop-blur-sm px-2.5 py-1 rounded-full"><span class="font-label-caps text-primary uppercase">' . e($product['application_grade'] ?? '') . '</span></div></div><div class="flex flex-grow flex-col justify-between p-space-xl"><div><div class="flex items-center justify-between mb-space-xs"><span class="font-label-caps text-on-surface-variant uppercase tracking-wider">' . e($product['series_code'] ? 'Series ' . $product['series_code'] : '') . '</span><span class="material-symbols-outlined text-primary text-[20px]">' . e($product['icon'] ?: 'eco') . '</span></div><h3 class="font-headline-md text-on-surface group-hover:text-primary transition-colors mb-space-xs">' . e($product['name']) . '</h3><p class="font-body-sm text-on-surface-variant">' . e($product['description'] ?? '') . '</p></div><div class="pt-space-lg"><a class="inline-flex items-center font-label-md text-primary" href="' . e(url('products/' . $product['slug'])) . '">Learn More <span class="material-symbols-outlined text-[18px] ml-1">arrow_forward</span></a></div></div></article>';
   }
   return $cards . '</div>';
+}
+
+function original_product_filter_pills(string $activeCategory): string
+{
+  $categories = ['' => 'All', 'packaging' => 'Packaging', 'films' => 'Films', 'cutlery' => 'Cutlery'];
+  $pills = '<div class="flex flex-wrap items-center gap-2">';
+  foreach ($categories as $value => $label) {
+    $href = $value === '' ? url('products') : url('products?category=' . $value);
+    $active = $activeCategory === $value;
+    $classes = $active
+      ? 'bg-primary text-on-primary font-label-md text-label-md px-4 py-1.5 rounded-full shadow-sm transition-all'
+      : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md px-4 py-1.5 rounded-full transition-all';
+    $pills .= '<a class="' . $classes . '" href="' . e($href) . '">' . e($label) . '</a>';
+  }
+  return $pills . '</div>';
 }
 
 function original_blog_cards(array $posts): string
@@ -37,8 +55,19 @@ function render_original_page(string $page): void
     return;
   }
   if ($page === 'products') {
-    $products = safe_query(fn() => db()->query('SELECT * FROM products WHERE published = 1 ORDER BY display_order, name')->fetchAll(), []);
-    $html = original_slot($html, 'product-filter-slot', original_product_cards($products));
+    $validCategories = ['packaging', 'films', 'cutlery'];
+    $category = trim((string) ($_GET['category'] ?? ''));
+    $category = in_array($category, $validCategories, true) ? $category : '';
+    $products = safe_query(function () use ($category): array {
+      if ($category !== '') {
+        $stmt = db()->prepare('SELECT * FROM products WHERE published = 1 AND category = ? ORDER BY display_order, name');
+        $stmt->execute([$category]);
+        return $stmt->fetchAll();
+      }
+      return db()->query('SELECT * FROM products WHERE published = 1 ORDER BY display_order, name')->fetchAll();
+    }, []);
+    $html = original_slot($html, 'product-filter-slot', original_product_filter_pills($category));
+    $html = original_slot($html, 'products-grid-slot', original_product_cards($products));
     $html = original_slot($html, 'offset-calculator-slot', '');
     $html = original_slot($html, 'tech-specs-slot', render_specs_button());
     $html = str_replace('<button class="w-full bg-secondary-container', '<a href="' . e(url('contact?request=sample')) . '" class="w-full inline-flex items-center justify-center bg-secondary-container', $html);
@@ -57,7 +86,9 @@ function render_original_page(string $page): void
 
 function render_specs_button(): string
 {
-  return '<button class="inline-flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-container-highest font-label-md text-label-md px-space-lg py-space-sm rounded-full transition-all" type="button" data-bs-toggle="modal" data-bs-target="#specModal"><span class="material-symbols-outlined text-[18px] mr-1.5 text-primary">science</span>Technical Spec Sheet</button>' . '<div class="modal fade" id="specModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h3 class="modal-title">Cassava Resin Specification Summary</h3><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><p>Preliminary material property comparison between CassavaForge Native Resin CF-100 and standard low-density polyethylene (LDPE).</p><div class="table-responsive"><table class="table"><thead><tr><th>Parameter</th><th class="text-success">CassavaForge CF-100</th><th>Standard LDPE</th></tr></thead><tbody><tr><th>Feedstock Source</th><td>Manihot esculenta (Cassava)</td><td>Petroleum Naphtha</td></tr><tr><th>Tensile Modulus (MPa)</th><td>280 - 450</td><td>200 - 400</td></tr><tr><th>Industrial Compost</th><td>&lt; 90 days</td><td>Non-degradable (400+ yrs)</td></tr><tr><th>Marine Toxicity</th><td>Non-toxic, bio-assimilable</td><td>Microplastic hazardous</td></tr></tbody></table></div></div><div class="modal-footer"><button class="btn btn-success" data-bs-dismiss="modal">Close Window</button></div></div></div></div>';
+  return '<button class="inline-flex items-center justify-center bg-surface-container text-on-surface hover:bg-surface-container-highest font-label-md text-label-md px-space-lg py-space-sm rounded-full transition-all" type="button" id="specModalOpenBtn"><span class="material-symbols-outlined text-[18px] mr-1.5 text-primary">science</span>Technical Spec Sheet</button>'
+  . '<div class="modal" id="specModal" tabindex="-1" aria-hidden="true" style="display:none;"><div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h3 class="modal-title">Cassava Resin Specification Summary</h3><button type="button" class="btn-close" id="specModalCloseX"></button></div><div class="modal-body"><p>Preliminary material property comparison between CassavaForge Native Resin CF-100 and standard low-density polyethylene (LDPE).</p><div class="table-responsive"><table class="table"><thead><tr><th>Parameter</th><th class="text-success">CassavaForge CF-100</th><th>Standard LDPE</th></tr></thead><tbody><tr><th>Feedstock Source</th><td>Manihot esculenta (Cassava)</td><td>Petroleum Naphtha</td></tr><tr><th>Tensile Modulus (MPa)</th><td>280 - 450</td><td>200 - 400</td></tr><tr><th>Industrial Compost</th><td>&lt; 90 days</td><td>Non-degradable (400+ yrs)</td></tr><tr><th>Marine Toxicity</th><td>Non-toxic, bio-assimilable</td><td>Microplastic hazardous</td></tr></tbody></table></div></div><div class="modal-footer"><button class="btn btn-success" id="specModalCloseBtn">Close Window</button></div></div></div></div>'
+  . '<script>(function(){function q(id){return document.getElementById(id);}var modal=q("specModal");if(!modal)return;document.body.appendChild(modal);function openModal(){modal.style.display="block";modal.classList.add("show");modal.removeAttribute("aria-hidden");document.body.classList.add("modal-open");var b=document.createElement("div");b.className="modal-backdrop fade show";b.id="specModalBackdrop";document.body.appendChild(b);}function closeModal(){modal.style.display="none";modal.classList.remove("show");modal.setAttribute("aria-hidden","true");document.body.classList.remove("modal-open");var b=q("specModalBackdrop");if(b)b.remove();}var openBtn=q("specModalOpenBtn");if(openBtn)openBtn.addEventListener("click",openModal);["specModalCloseX","specModalCloseBtn"].forEach(function(id){var el=q(id);if(el)el.addEventListener("click",closeModal);});modal.addEventListener("click",function(e){if(e.target===modal)closeModal();});document.addEventListener("keydown",function(e){if(e.key==="Escape")closeModal();});})();</script>';
 }
 
 function render_blog_article(string $slug): void
