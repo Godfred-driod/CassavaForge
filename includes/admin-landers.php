@@ -18,19 +18,27 @@ function render_landers_report(): void
         $peak = max($peak, (int) $point['views']);
     }
     ?>
-    <section class="section"><div class="container">
-      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <div><p class="eyebrow">Traffic</p><h1 class="mb-0">Landing pages</h1></div>
-        <div class="d-flex gap-2"><a class="btn btn-outline-dark sans" href="<?= e(url('admin')) ?>">Dashboard</a><a class="btn btn-outline-secondary sans" href="<?= e(url('admin/landers')) ?>">Refresh</a></div>
+    <section class="admin-panel">
+      <div class="dash-head">
+        <div>
+          <p class="eyebrow">Traffic</p>
+          <h1>Landing pages</h1>
+          <p class="dash-lead">How visitors reach and move through the public site.</p>
+        </div>
+        <a class="btn btn-outline-secondary sans" href="<?= e(url('admin/landers')) ?>">Refresh</a>
       </div>
 
       <?php if ((int) $totals['views'] === 0): ?>
         <div class="alert alert-secondary sans">No page views recorded yet. As visitors browse the public site, landings will appear here. If you just deployed, make sure the <code>page_views</code> table from <code>migrations/2026_01_page_views.sql</code> has been imported.</div>
       <?php endif; ?>
 
-      <div class="row g-4 mb-4">
-        <?php foreach ([['Total page views', $totals['views']], ['Unique visitors', $totals['visitors']], ['Views today', $totals['today']], ['Tracked pages', count($pages)]] as $card): ?>
-          <div class="col-6 col-lg-3"><div class="card p-4 h-100"><p class="eyebrow mb-1"><?= e($card[0]) ?></p><strong class="display-5"><?= e((string) $card[1]) ?></strong></div></div>
+      <div class="dash-grid is-4">
+        <?php foreach ([['Total page views', $totals['views'], 'monitoring'], ['Unique visitors', $totals['visitors'], 'group'], ['Views today', $totals['today'], 'today'], ['Tracked pages', count($pages), 'web']] as $card): ?>
+          <div class="dash-card">
+            <span class="dash-card-icon"><span class="material-symbols-outlined"><?= e($card[2]) ?></span></span>
+            <p class="dash-card-label"><?= e($card[0]) ?></p>
+            <strong class="dash-card-value"><?= e((string) $card[1]) ?></strong>
+          </div>
         <?php endforeach; ?>
       </div>
 
@@ -91,6 +99,6 @@ function render_landers_report(): void
           </div>
         </div>
       </div>
-    </div></section>
+    </section>
     <?php
 }

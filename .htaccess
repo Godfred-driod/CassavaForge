@@ -1,11 +1,28 @@
 RewriteEngine On
-RewriteBase /
+
+# Keep local Laragon on HTTP. Force HTTPS and drop www on the live domain.
+RewriteCond %{HTTP_HOST} !^localhost [NC]
+RewriteCond %{HTTP_HOST} !^127\.0\.0\.1
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
+RewriteCond %{HTTP_HOST} !^localhost [NC]
+RewriteCond %{HTTP_HOST} !^127\.0\.0\.1
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+RewriteRule ^(?:\.git|config|migrations|install)(?:/|$) - [F,L]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
 
 Options -Indexes
 
-<FilesMatch "\.(env|sql|ini|log)$">
+<FilesMatch "\.(env|sql|ini|log|md|json)$">
+  Require all denied
+</FilesMatch>
+
+<FilesMatch "^(config\.php|config\.local\.php|\.gitignore)$">
   Require all denied
 </FilesMatch>

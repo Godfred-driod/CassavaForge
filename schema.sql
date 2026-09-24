@@ -1,3 +1,5 @@
+-- Local Laragon only. On Hostinger import install/hostinger.sql instead.
+
 CREATE DATABASE IF NOT EXISTS cassavaforge CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE cassavaforge;
 

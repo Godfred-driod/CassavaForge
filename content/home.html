@@ -29,10 +29,10 @@
         </p>
 <!-- CTA Actions -->
 <div class="flex flex-wrap items-center gap-space-md pt-space-xs">
-<a class="inline-flex items-center justify-center bg-primary-container hover:bg-tertiary text-on-primary font-label-md text-label-md px-space-xl py-3 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5" data-path="products" href="#">
+<a class="inline-flex items-center justify-center bg-primary-container hover:bg-tertiary text-on-primary font-label-md text-label-md px-space-xl py-3 rounded-full transition-all duration-200 shadow-md hover:shadow-lg hover:-translate-y-0.5" data-path="products">
             Our Products
           </a>
-<a class="inline-flex items-center justify-center bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-on-primary font-label-md text-label-md px-space-xl py-3 rounded-full backdrop-blur-sm transition-all duration-200" data-path="about" href="#">
+<a class="inline-flex items-center justify-center bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-on-primary font-label-md text-label-md px-space-xl py-3 rounded-full backdrop-blur-sm transition-all duration-200" data-path="about">
             Learn More
           </a>
 </div>
@@ -110,7 +110,7 @@
             To transform cassava into high-performance, biodegradable bioplastics that reduce plastic pollution and create sustainable value for people and the planet.
           </p>
 <div>
-<a class="inline-flex items-center gap-space-xs font-headline-sm text-headline-sm text-primary hover:text-tertiary transition-colors group" data-path="about" href="#">
+<a class="inline-flex items-center gap-space-xs font-headline-sm text-headline-sm text-primary hover:text-tertiary transition-colors group" data-path="about">
 <span>Learn More</span>
 <span class="material-symbols-outlined text-[20px] transition-transform duration-200 group-hover:translate-x-1">arrow_forward</span>
 </a>
@@ -140,13 +140,3 @@
 </div>
 </section>
 </div>
-<script>
-  // Simple interactive hover feedback on buttons and action cards
-  document.querySelectorAll('a[data-path]').forEach(link => {
-    link.addEventListener('click', (e) => {
-      e.preventDefault();
-      const target = link.getAttribute('data-path');
-      window.dispatchEvent(new CustomEvent('nav-navigate', { detail: { path: target } }));
-    });
-  });
-</script>

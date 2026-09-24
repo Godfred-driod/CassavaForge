@@ -23,26 +23,7 @@
         </p>
 </div>
 <!-- Quick Filter Bar -->
-<div class="flex items-center gap-space-xs mt-8 overflow-x-auto pb-2 scrollbar-none">
-<button class="filter-btn active bg-surface text-primary font-label-md text-label-md px-4 py-1.5 rounded-full shadow-sm transition-all" data-category="all">
-          All Articles
-        </button>
-<button class="filter-btn bg-white/10 hover:bg-white/20 text-on-primary font-label-md text-label-md px-4 py-1.5 rounded-full backdrop-blur-sm transition-all" data-category="Innovation">
-          Innovation
-        </button>
-<button class="filter-btn bg-white/10 hover:bg-white/20 text-on-primary font-label-md text-label-md px-4 py-1.5 rounded-full backdrop-blur-sm transition-all" data-category="Research">
-          Research
-        </button>
-<button class="filter-btn bg-white/10 hover:bg-white/20 text-on-primary font-label-md text-label-md px-4 py-1.5 rounded-full backdrop-blur-sm transition-all" data-category="Sustainability">
-          Sustainability
-        </button>
-<button class="filter-btn bg-white/10 hover:bg-white/20 text-on-primary font-label-md text-label-md px-4 py-1.5 rounded-full backdrop-blur-sm transition-all" data-category="Community">
-          Community
-        </button>
-<button class="filter-btn bg-white/10 hover:bg-white/20 text-on-primary font-label-md text-label-md px-4 py-1.5 rounded-full backdrop-blur-sm transition-all" data-category="Product Update">
-          Product Update
-        </button>
-</div>
+<div id="blog-filter-slot"></div>
 </div>
 </section>
 <!-- News Cards Grid Section -->
@@ -57,51 +38,18 @@
 <div class="flex flex-col gap-space-xs max-w-xl">
 <span class="font-label-caps text-label-caps text-primary uppercase tracking-wider">Stay In The Loop</span>
 <h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
-              Biomaterial breakthroughs delivered straight to your inbox.
+              Notes from the work, not a marketing inbox.
             </h2>
 <p class="font-body-md text-body-md text-on-surface-variant">
-              Monthly technical insights, peer-reviewed whitepapers, and updates on sustainable industrial packaging.
+              Occasional notes from the lab, the field, and partnership work — no spam.
             </p>
 </div>
-<form class="flex flex-col sm:flex-row gap-space-xs w-full lg:w-auto" id="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing to CassavaForge updates!');">
-<input class="px-space-md py-space-sm rounded-lg bg-surface-container-lowest text-on-surface font-body-md text-body-md outline-none focus:ring-2 focus:ring-primary shadow-sm min-w-[280px]" placeholder="Enter your corporate email" required="" type="email"/>
-<button class="bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md px-space-lg py-space-sm rounded-lg transition-colors shadow-sm flex items-center justify-center gap-space-xs" type="submit">
-<span>Subscribe</span>
-<span class="material-symbols-outlined text-[18px]">outgoing_mail</span>
-</button>
-</form>
+<a class="bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md px-space-lg py-space-sm rounded-lg transition-colors shadow-sm flex items-center justify-center gap-space-xs" data-path="contact">
+<span>Write to the team</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
 </div>
 </div>
 </div>
 </section>
 </div>
-<script>
-  // Simple category filtering micro-interaction
-  document.addEventListener('DOMContentLoaded', () => {
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    const cards = document.querySelectorAll('#articles-grid article');
-
-    filterBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        // Toggle Active Styling
-        filterBtns.forEach(b => {
-          b.classList.remove('bg-surface', 'text-primary');
-          b.classList.add('bg-white/10', 'text-on-primary');
-        });
-        btn.classList.add('bg-surface', 'text-primary');
-        btn.classList.remove('bg-white/10', 'text-on-primary');
-
-        const category = btn.getAttribute('data-category');
-
-        cards.forEach(card => {
-          const cardCategory = card.getAttribute('data-card-category');
-          if (category === 'all' || cardCategory === category) {
-            card.style.display = 'flex';
-          } else {
-            card.style.display = 'none';
-          }
-        });
-      });
-    });
-  });
-</script>

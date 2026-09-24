@@ -1,0 +1,24 @@
+<?php
+declare(strict_types=1);
+
+// Copy this file to config.local.php on the server (never commit that copy).
+// Hostinger: create the file in File Manager after upload. Do not upload your Laragon copy.
+
+return [
+    // Live domain, no trailing slash. Example: https://cassavaforge.com
+    'site_url' => 'https://YOUR-DOMAIN.com',
+
+    'db' => [
+        'host' => 'localhost',
+        'port' => '3306',
+        // Hostinger prefixes these. Copy them from hPanel → Databases.
+        'name' => 'u000000000_cassava',
+        'user' => 'u000000000_admin',
+        'password' => 'replace-with-hostinger-db-password',
+        'charset' => 'utf8mb4',
+    ],
+
+    // First owner account is created automatically if the users table is empty.
+    'admin_email' => 'you@example.com',
+    'admin_password_hash' => '',
+];

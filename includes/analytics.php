@@ -16,7 +16,7 @@ function is_public_route(string $path): bool
     if ($path === '') {
         return true;
     }
-    if (in_array($path, ['about', 'products', 'impact', 'blog', 'contact'], true)) {
+    if (in_array($path, ['about', 'products', 'impact', 'blog', 'contact', 'privacy'], true)) {
         return true;
     }
     return str_starts_with($path, 'products/') || str_starts_with($path, 'blog/');
@@ -32,7 +32,10 @@ function track_current_request(string $path): void
     if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') {
         return;
     }
-    if (is_admin() || str_starts_with($path, 'admin')) {
+    if (is_admin() || str_starts_with($path, 'admin') || str_starts_with($path, 'portal')) {
+        return;
+    }
+    if (in_array($path, ['sitemap.xml', 'robots.txt'], true)) {
         return;
     }
     if (!is_public_route($path)) {

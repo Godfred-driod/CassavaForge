@@ -1,5 +1,7 @@
 config/config.local.php
-assets/uploads/
+assets/uploads/*
+!assets/uploads/.htaccess
+!assets/uploads/.gitkeep
 .env
 .env.local
 *.log

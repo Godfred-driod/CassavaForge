@@ -1,8 +1,25 @@
 # Shared-hosting configuration
 
-Set these values in `config.php` on the hosting account. Keep the file outside public version control if your host supports environment variables.
+Copy `config.local.php.example` to `config.local.php` on the server and fill in Hostinger values. That file is gitignored and overrides `config.php`. Do not upload the Laragon `config.local.php`.
 
-- `site_url`: full domain, for example `https://cassavaforge.com`
-- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`: cPanel MySQL credentials
-- `ADMIN_EMAIL`: admin login email
-- `ADMIN_PASSWORD_HASH`: output from `php -r "echo password_hash('your-password', PASSWORD_DEFAULT), PHP_EOL;"`
+## Hostinger values
+
+- `site_url`: `https://your-domain.com` with no trailing slash
+- `db.host`: `localhost`
+- `db.name`, `db.user`, `db.password`: from hPanel → Databases (they are prefixed, for example `u123456789_cassava`)
+- `admin_email`: owner login email
+- `admin_password_hash`: output of
+
+```bash
+php -r "echo password_hash('your-password', PASSWORD_DEFAULT), PHP_EOL;"
+```
+
+The first request after import creates the owner account if `users` is empty.
+
+## Namecheap domain → Hostinger
+
+1. In Hostinger hPanel, add the domain to the website (or use Connect domain).
+2. Copy the two nameservers from Plan details or the connect-domain screen.
+3. In Namecheap: Domain List → Manage → Nameservers → Custom DNS. Paste both Hostinger nameservers and save.
+4. Wait for DNS (often minutes, up to 24 hours).
+5. In hPanel, enable free SSL for the domain.

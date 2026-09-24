@@ -6,8 +6,37 @@ function app_config(): array
     static $config;
     if (!$config) {
         $config = require __DIR__ . '/../config/config.php';
+        $local = __DIR__ . '/../config/config.local.php';
+        if (is_file($local)) {
+            $config = array_replace_recursive($config, require $local);
+        }
+        $envUrl = getenv('SITE_URL');
+        if (is_string($envUrl) && $envUrl !== '') {
+            $config['site_url'] = $envUrl;
+        } else {
+            $detected = request_base_url();
+            if ($detected !== null) {
+                $config['site_url'] = $detected;
+            }
+        }
     }
     return $config;
+}
+
+function request_base_url(): ?string
+{
+    $host = trim((string) ($_SERVER['HTTP_HOST'] ?? ''));
+    if ($host === '') {
+        return null;
+    }
+    $https = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+    $scheme = $https ? 'https' : 'http';
+    $script = str_replace('\\', '/', (string) ($_SERVER['SCRIPT_NAME'] ?? '/index.php'));
+    $dir = rtrim(dirname($script), '/');
+    if ($dir === '' || $dir === '.' || $dir === '\\') {
+        $dir = '';
+    }
+    return $scheme . '://' . $host . $dir;
 }
 
 function db(): PDO
