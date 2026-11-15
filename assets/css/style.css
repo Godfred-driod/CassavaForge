@@ -29,7 +29,6 @@ h2 { font-weight: 700; letter-spacing: -.02em; }
 footer { background: var(--primary); color: white; }
 footer a { color: var(--secondary-fixed); text-decoration: none; }
 .mobile-bottom-nav { z-index: 1030; }
-@media (max-width: 767.98px) { body { padding-bottom: 64px; } }
 .admin-body, .admin-login-body { padding-bottom: 0 !important; background: #f4f7f2; }
 body.admin-body { height: 100vh; overflow: hidden; }
 .admin-shell { display: grid; grid-template-columns: 200px minmax(0, 1fr); height: 100vh; overflow: hidden; background: #f4f7f2; }

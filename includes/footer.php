@@ -15,7 +15,16 @@ $socials = [
     <div class="pt-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-md font-body-sm text-body-sm text-on-primary-container"><p>&copy; 2026 CassavaForge. All rights reserved.</p><p>First-party visit data is described in our <a class="text-secondary-fixed" href="<?= e(url('privacy')) ?>">privacy note</a>.</p></div>
   </div>
 </footer>
-<nav class="mobile-bottom-nav md:hidden fixed bottom-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]"><div class="flex items-center justify-around h-16 px-space-xs"><?php foreach ([['','Home','eco'],['about','About','science'],['products','Products','inventory_2'],['impact','Impact','compost'],['blog','Blog','article'],['contact','Contact','contact_support']] as $tab): ?><a href="<?= e(url($tab[0])) ?>" aria-current="<?= $currentPath === $tab[0] ? 'page' : 'false' ?>" class="flex flex-col items-center justify-center w-12 min-h-[44px] <?= $currentPath === $tab[0] ? 'text-primary font-bold' : 'text-on-surface-variant' ?>"><span class="material-symbols-outlined text-[22px]"><?= e($tab[2]) ?></span><span class="font-label-caps text-[10px] leading-tight"><?= e($tab[1]) ?></span></a><?php endforeach; ?></div></nav>
+<nav class="mobile-bottom-nav md:hidden fixed bottom-0 inset-x-0 z-50 bg-surface/95 backdrop-blur-xl border-t border-black/5" aria-label="Primary">
+  <div class="mobile-bottom-nav-inner flex items-stretch justify-between gap-0 px-1 safe-bottom">
+    <?php foreach ([['','Home','eco'],['about','About','science'],['products','Products','inventory_2'],['impact','Impact','compost'],['blog','Blog','article'],['contact','Contact','contact_support']] as $tab): ?>
+      <a href="<?= e(url($tab[0])) ?>" aria-current="<?= $currentPath === $tab[0] ? 'page' : 'false' ?>" class="mobile-bottom-nav-link <?= $currentPath === $tab[0] ? 'is-active' : '' ?>">
+        <span class="material-symbols-outlined" aria-hidden="true"><?= e($tab[2]) ?></span>
+        <span class="mobile-bottom-nav-label"><?= e($tab[1]) ?></span>
+      </a>
+    <?php endforeach; ?>
+  </div>
+</nav>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

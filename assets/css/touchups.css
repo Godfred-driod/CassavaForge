@@ -14,14 +14,114 @@
 #focus-section ~ section button:hover::after, #focus-section + section button:hover::after { transform: translateX(110%); }
 @media (max-width: 991.98px) { .original-product-grid, .original-blog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 767.98px) { .original-product-grid, .original-blog-grid { grid-template-columns: 1fr; } }
-@media (max-width: 767.98px) { .mobile-bottom-nav { display: block; } body { padding-bottom: 4rem; } }
+
+/* Mobile shell: uncrowded header + usable bottom nav */
+.site-header-account {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.site-header-cta {
+  white-space: nowrap;
+  padding: .45rem .9rem;
+}
+.site-header-cta-short { display: none; }
+.site-header-cta-long { display: inline; }
+
+.mobile-bottom-nav { display: none; }
+.mobile-bottom-nav-link {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 3.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .15rem;
+  padding: .35rem .15rem;
+  text-decoration: none;
+  color: #3f493f;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-bottom-nav-link .material-symbols-outlined {
+  font-size: 22px;
+  line-height: 1;
+}
+.mobile-bottom-nav-label {
+  font: 700 9px/1.15 Manrope, sans-serif;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.mobile-bottom-nav-link.is-active {
+  color: #00652c;
+}
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (max-width: 767.98px) {
+  .mobile-bottom-nav { display: block; }
+  body:not(.admin-body):not(.admin-login-body) { padding-bottom: 4.75rem; }
+
+  .site-header-account {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+  }
+  .site-header-account .material-symbols-outlined {
+    font-size: 22px;
+    line-height: 1;
+  }
+  .site-header-account-label { display: none; }
+  .site-header-cta {
+    padding: .5rem .95rem;
+    font-size: 13px;
+  }
+  .site-header-cta-long { display: none; }
+  .site-header-cta-short { display: inline; }
+  .site-wordmark {
+    font-size: 1.05rem;
+    line-height: 1.2;
+  }
+
+  /* Give the hero breathing room on narrow phones */
+  .page-home .px-layout-margin-mobile,
+  .page-about .px-layout-margin-mobile,
+  .page-products .px-layout-margin-mobile,
+  .page-impact .px-layout-margin-mobile,
+  .page-blog .px-layout-margin-mobile,
+  .page-contact .px-layout-margin-mobile {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+  .page-home section.bg-primary .flex.flex-wrap.items-center.gap-space-md {
+    width: 100%;
+  }
+  .page-home section.bg-primary .flex.flex-wrap.items-center.gap-space-md > a {
+    flex: 1 1 9rem;
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 379.98px) {
+  .site-wordmark { max-width: 7.5rem; }
+  .mobile-bottom-nav-label { font-size: 8px; }
+}
+
 .portal-wrap { max-width: 820px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
 .portal-wrap .eyebrow a { color: inherit; }
 .admin-panel .eyebrow a { color: inherit; }
 .portal-status { display: inline-block; padding: .2rem .65rem; border-radius: 999px; background: #e8f5e9; color: #00652c; font: 700 12px/1.4 Manrope, sans-serif; }
 @media (min-width: 768px) {
-  .site-wordmark { display: none; }
   .site-logo { height: 2.25rem; }
+  .site-header-cta { padding: .45rem 1.25rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
